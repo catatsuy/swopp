@@ -1,0 +1,291 @@
+ArchHDL はハードウェアの RTL モデリングのための言語である．
+Verilog HDL に近い記述方法を目指している．
+ユーザはライブラリにより提供される Module クラス，reg クラス，wire クラスおよび C++11 のラムダ関数を用いて
+ハードウェアを記述する．
+
+\subsection{ArchHDL の制約}
+
+ArchHDL には，次に挙げる制約がある．
+
+\begin{itemize}
+ \item 単一クロックの立ち上がりエッジのみでレジスタの値を更新
+ \item 32 ビットや 64 ビットなどの整数型をベースとした記述
+\end{itemize}
+
+実装を簡潔にするために単一クロックの同期回路で，
+かつレジスタへの代入はクロックの立ち上がりエッジのみのハードウェアを対象とする．
+複数のクロックや，クロックの立ち上がりエッジと立ち下がりエッジでの制御はサポートしていない．
+
+演算に用いるデータ型として，C++ 言語の32 ビットや 64 ビットなどの整数型を使用する．
+任意のビット幅のレジスタやワイヤはサポートしていない．
+演算子は C++ が提供する演算子をサポートしており，
+Verilog HDL で使用可能なビット切り出しやビット連結などの演算はサポートしない．
+
+\subsection{ArchHDL の利点}
+
+ArchHDL には，次に挙げる利点がある．
+
+\begin{itemize}
+ \item ハードウェアモジュール間の接続の記述が容易
+ \item 論理シミュレーションが高速
+\end{itemize}
+ここでは特に重要な前者について述べる．
+
+\begin{figure}[t]
+ \centering
+ \includegraphics[clip,width=.4\textwidth]{module}
+ \caption{手続き型言語では記述が難しいモジュール間の接続の例}
+ \label{fig:module}
+\end{figure}
+
+\figref{fig:module} に，手続き型言語でハードウェアの挙動を記述しようとすると，
+記述が難しいモジュール間の接続の例を示す．
+モジュール A は入力ワイヤ A\_in，出力ワイヤ A\_out の入出力を持つ．
+出力ワイヤ A\_out はレジスタ A\_reg の値を出力する．
+モジュール B は入力ワイヤ B\_in，出力ワイヤ B\_out の入出力を持つ．
+出力ワイヤ B\_out はレジスタ B\_reg の値を出力する．
+
+モジュール A の出力ワイヤ A\_out は モジュール B の入力ワイヤ B\_in に接続している．
+モジュール B の出力ワイヤ B\_out は モジュール A の入力ワイヤ A\_in に接続している．
+モジュール A は，あるサイクルに入力として B\_reg の値を受け，A\_reg の値を出力するというモジュールである．
+同様に，モジュール B は，あるサイクルに入力として A\_reg の値を受け，B\_reg の値を出力するというモジュールである．
+
+\begin{figure}[t]
+ \begin{center}
+  \includegraphics[width=.4\textwidth,clip]{module2}
+  \caption{\figref{fig:module} のハードウェアの記述例}
+  \label{fig:module2}
+ \end{center}
+\end{figure}
+
+このハードウェアの挙動をモジュールごとに記述すると，\figref{fig:module2}（a）のようになる．
+この記述は，
+モジュールへの入力，モジュール内の処理，モジュールからの出力，レジスタの更新という
+まとまりのある記述になっている．
+レジスタの更新は図中の太字で示した箇所である．
+
+手続き型言語で
+\figref{fig:module2}（a）のように順番にモジュール A，モジュール B の処理が記述される場合，
+モジュール A の処理の先頭にある A\_in への代入は，1 サイクル前の B\_out の状態となり，
+\figref{fig:module}のハードウェアとは異なる挙動となる．
+
+このハードウェアの挙動を手続き型言語で記述するには，
+\figref{fig:module2}（b）のようにレジスタからの読み出しをモジュールごとの処理とは別に
+記述するといった対策が必要である．
+しかし，このような記述はモジュールが複雑になればなるほど呼び出し順序に依存関係が生じ，
+保守性や可読性が損なわれる．
+
+Verilog HDL などのハードウェア記述言語では継続代入やノン・ブロッキング代入のサポートにより
+呼び出し順序に依らないハードウェアの記述が可能である．
+ArchHDL では，ライブラリにより提供されるクラス群を使用してハードウェアを記述すれば，
+先に例示したようなモジュールの接続も Verilog HDL 同様に記述することができる．
+
+\subsection{ArchHDL による RTL モデリング}
+ArchHDL を用いた RTL モデリングでは，
+ライブラリにより提供される Module クラス，reg クラス，wire クラスおよび，C++11 のラムダ関数を用いて
+ハードウェアを記述する．
+
+\begin{figure}[t]
+ \lstinputlisting[language=c++]{src/counter8.cc}
+ \caption{ArchHDL による 8 ビットカウンタ回路の記述}
+ \label{src:counter}
+\end{figure}
+
+\begin{figure}[t]
+ \lstinputlisting[language=verilog]{src/counter8.v}
+ \caption{Verilog HDL による 8 ビットカウンタ回路の記述}
+ \label{src:counter_v}
+\end{figure}
+
+\figref{src:counter}に，ArchHDL を用いて記述した 8 ビットカウンタ回路のコードを示す．
+また，\figref{src:counter_v} に，Verilong HDL で記述した 8 ビットカウンタ回路のコードを示す．
+ArchHDL において，Module クラスを継承して定義されるクラス（Module 子クラス）は，
+Verilog HDL におけるモジュールに相当する．
+同様に reg クラス，wire クラスは，それぞれ Verilog HDL におけるレジスタ，ワイヤに相当する．
+
+Module 子クラスは，そのメンバ関数として Init 関数および Always 関数を定義する必要がある．
+これは，ライブラリにより強制されており，いずれかの関数が必要でない場合でも空の関数を定義する必要がある．
+
+Init 関数には，モジュール内のすべてのワイヤへの継続代入の定義を記述する．
+これは，Verilog HDL においてモジュール内で定義されている assign 文をすべてこの関数内に記述することに相当する．
+wire クラスのインスタンスにラムダ関数を代入することでワイヤへの継続代入を記述することができる．
+\figref{src:counter}では，6 行目で wire クラスの変数 out に reg クラス の counter の値を返す
+ラムダ関数（[=]() { return counter(); }）を代入している．
+ここで，reg クラスのオブジェクトは関数として呼び出すことにより，そのサイクルにおける値を取得することができる．
+このため，先のラムダ関数における counter() によってレジスタの値が取得できる．
+これは，\figref{src:counter_v} の 6 行目に相当する．
+
+Always 関数には，モジュール内のすべてのレジスタへのノン・ブロッキング代入を記述する．
+ArchHDL では，単一クロックの立ち上がりエッジでの制御のみを対象としている．
+これは，Verilog HDL における '' always @(posedge clock)`` ブロック内の記述に相当する．
+reg クラスのインスタンスに$<<=$演算子を用いて値を代入することでノン・ブロッキング代入を記述することができる．
+ArchHDL は，演算子オーバーロードを利用して$<<=$演算子を Verilog HDL における
+ノン・ブロッキング代入に相当する値の代入として実装している．
+\figref{src:counter}では，9 行目で reg クラスの変数 counter に自身の値をインクリメントした値を代入している．
+これは，\figref{src:counter_v}の 8 行目に相当する．
+
+ArchHDL では，データ型として C++ の整数型を使用している．
+\figref{src:counter}の例では unsigned int 型を利用しているため，
+8 ビットカウンタを実現するために値をマスクする必要がある．
+reg クラスと wire クラスのオブジェクトは関数として呼び出すことにより，そのサイクルにおける値を取得することができる．
+
+\subsection{テストベンチの記述}
+ArchHDL は，C++ 言語をベースとしている．
+したがって，ユーザは柔軟にテストベンチを記述することが可能である．
+ここでは，ArchHDL の提供するライブラリを用いたテストベンチ記述の一例を示す．
+
+\begin{figure}[t]
+ \lstinputlisting[language=c++]{src/cnt_testtop.cc}
+ \caption{ArchHDL を用いたカウンタ回路のためのテストベンチの記述例}
+ \label{src:test}
+\end{figure}
+
+\figref{src:test} は，先に示したカウンタ回路の ArchHDL によるテストベンチの記述例である．
+インクルードの記述などは省略している．また，14 行目と 16行目の HALT\_CYCLE は定数である．
+
+このテストベンチ記述は，テストモジュール TestTop を作成し，
+その中でカウンタ回路のインスタンスを生成しテストを行うという設計になっている．
+そのために，22 行目からの main 関数は簡潔になり，TestTop モジュールのインスタンス生成と
+ライブラリによりステップ実行のみの記述となる．
+
+ArchHDL は，モジュールのインスタンスを生成する際にすべての reg クラスのインスタンス，
+wire クラスのインスタンスをライブラリで一元管理する設計になっている．
+そのため，23 行目のようにモジュールのインスタンスを生成したのち，
+ArchHDL により提供される Step 関数（25行目）を呼び出せばサイクルごとのシミュレーションができる．
+
+\begin{figure}[t]
+ \lstinputlisting[language=verilog]{src/cnt_testtop.v}
+ \caption{Verilog HDL を用いたカウンタ回路のためのテストベンチの記述例}
+ \label{src:test_v}
+\end{figure}
+
+\figref{src:test} に挙げたテストベンチの記述は，Verilog HDL で同様の記述ができるという利点がある．
+\figref{src:test_v} に Verilog HDL を用いて同様のテストベンチを記述する例を示す．
+ArchHDL を用いた場合と大きく異なる点は 14 行目においてクロックを生成している部分である．
+それ以外の記述については ArchHDL と Verilog HDL で大きな違いはない．
+
+\subsection{ArchHDL の実装}
+\subsubsection{ソフトウェアアーキテクチャ}
+ArchHDL のライブラリには，Module クラス，wire クラス，reg クラス，これらの 3 個のクラスのインタフェースクラス，
+Singleton クラスの 7 個のクラスが定義されている．
+本章では，標準ライブラリのインクルードをのぞくすべてのライブラリのコードを示しながら ArchHDL の実装について述べる．
+以降の説明では，ユーザが Module クラスを継承して作成したクラスを Module 子クラスと呼ぶ．
+
+\begin{figure}[t]
+ \lstinputlisting[language=c++]{src/singleton.cc}
+ \caption{ArchHDL ライブラリにおける各インタフェースクラスと Singleton クラスと Step 関数の定義}
+ \label{src:class_singleton}
+\end{figure}
+
+\figref{src:class_singleton} に RegisterInterface クラス，ModuleInterface クラス，WireInterface クラス，
+Singleton クラスおよび Step 関数の定義を示す．
+
+ModuleInterface クラス，WireInterface クラス，RegisterInterface クラスは
+それぞれ Module クラス，wire クラス，reg クラスのインタフェースクラスである．
+Singleton クラスが，Module 子クラス，wire クラス，reg クラスのインスタンスを
+シングルトン・パターンにより一元管理する．
+これは，ArchHDL のライブラリにおいて核となるクラスである．
+
+Singleton クラスは，メンバ変数として Module クラス，wire クラス，reg クラスの
+インタフェースクラスのポインタを格納する可変行列をもつ（18 ～ 20 行目）．
+Module 子クラス，wire クラス，reg クラスのインスタンスが生成される際に，
+そのインスタンスへのポインタが Singleton クラスに渡される．
+また，ポインタは Singleton クラスに渡される際にそれぞれのインタフェースクラスに自動でアップキャストされる
+（26 ～ 34 行目）．
+
+Step 関数（50 ～ 57 行目）は，1 サイクルのシミュレーションを行う関数である．
+Step 関数を呼び出すと，Singleton クラスの Exec 関数が呼ばれる．
+ただし，初回 Step 関数の呼び出しのみ Singleton クラスの Init 関数が呼ばれる．
+Step 関数を繰り返し呼び出すことにより，複数サイクルにわたるシミュレーションが行なわれる．
+
+Init 関数（35 ～ 39 行目）は，保持しているすべての Module 子クラスのインスタンスの Init 関数を呼ぶ（37 行目）．
+%これにより，ユーザが Module 子クラス内に定義したワイヤの継続代入の処理が行われる．
+
+Exec 関数（40 ～ 47 行目）は，保持しているすべての Module 子クラスのインスタンスの Always 関数を呼び（42 行目），
+次に保持しているすべての reg クラスのインスタンスの Update 関数を呼ぶ（45 行目）．
+
+Always 関数によりすべてのレジスタについて次のサイクルにおける値が計算される．
+Update 関数によりレジスタの値が更新される．
+この Always と Update の処理によりレジスタのノン・ブロッキング代入を実現する．
+
+
+\subsubsection{reg クラスの定義}
+
+\begin{figure}[t]
+ \lstinputlisting[language=c++]{src/reg.cc}
+ \caption{ArchHDL ライブラリにおける reg クラスの定義}
+ \label{src:reg}
+\end{figure}
+
+\figref{src:reg} に，reg クラスの定義を示す．
+reg クラスは，扱うデータ型をテンプレート引数にとるテンプレートクラスである．
+また，インタフェースクラスである RegiterInterface クラスを継承する．
+
+ArchHDL ではレジスタを変数として扱うため，
+reg クラスはメンバ変数にテンプレート引数で与えられたデータ型の変数 curr\_ と next\_ を持つ（5，6 行目）．
+curr\_ は，あるサイクルにおけるレジスタの値で，next\_はその次のサイクルのレジスタの値である．
+Module 子クラスの Always 関数の呼び出しにより，next\_に値が代入される．
+reg クラスのメンバ関数 Update を呼ぶことで，next\_ の値は curr\_ に反映される（15 ～ 20 行目）．
+これによりレジスタへのノン・ブロッキング代入の挙動を実現する．
+
+reg クラスのオブジェクトへの値の代入をそのメンバ変数 next\_ への値の代入とするために，
+演算子オーバーロードにより \verb`<<=` 演算子を再定義している（24 ～ 27 行目）．
+\verb`<<=` 演算子により代入された値は，変数 next\_ に格納され，set\_ フラグがセットされる．
+
+ArchHDL では，
+すべての Module 子クラスのインスタンスの Always 関数を呼び出した後に，
+すべての reg クラスのインスタンス Update 関数を呼び出す．
+したがって，Always 関数が呼び出されている間に取得できる
+レジスタの値 curr\_ は Update 関数が呼ばれるまで保持されている．
+
+reg クラスのコンストラクタ（12 ～ 14 行目）では，
+メンバ変数を初期化し，自身のポインタを Singleton クラスに渡す処理が行われる．
+テスト記述や初期値設定のために = 演算子による値の代入も定義されている（21 ～ 23 行目）．
+= 演算子による値の代入は，式が評価された時点で curr\_ の値を変更する．
+reg クラスのインスタンスを関数として呼び出すことで curr\_の値を取得することができる（28 ～ 29 行目）．
+
+\subsubsection{wire クラスの定義}
+
+\begin{figure}[t]
+ \lstinputlisting[language=c++]{src/wire.cc}
+ \caption{ArchHDL ライブラリにおける wire クラスの定義}
+ \label{src:wire}
+\end{figure}
+
+\figref{src:wire} に，wire クラスの定義を示す．
+wire クラスは，テンプレート引数として扱うデータ型をとるテンプレートクラスである．
+また，インタフェースクラスの WireInterface クラスを継承している．
+
+ArchHDL では，ワイヤは関数として扱うため，
+wire クラスはメンバ変数にラムダ関数 lambda\_ を持つ（4 行目）クラスとなっている．
+このラムダ関数は，テンプレート引数として与えられたデータ型を返す関数である．
+
+コピーコンストラクタの禁止（7，8 行目）と演算子のオーバーロード（13，14 行目）により，
+wire クラスへの = 演算子による代入はラムダ関数に限定される．
+これにより，wire クラスのオブジェクトは Module 子クラスの Init 関数で記述される
+ラムダ関数を保持するクラスとなる．
+
+wire クラスのコンストラクタ（10 ～ 12 行目）では，
+メンバ変数を初期化し，自身のポインタを Singleton クラスに渡す処理が行われる．
+wire クラスのオブジェクトを関数として呼び出すと，
+自身の持つラムダ関数を呼び出した結果を返す（16 ～ 18 行目）．
+これにより，wire クラスのオブジェクトを関数呼び出しすることで，
+そのサイクルでのワイヤの値が取得できる．
+
+\subsubsection{Module クラスの定義}
+
+\begin{figure}[t]
+ \lstinputlisting[language=c++]{src/module.cc}
+ \caption{ArchHDL ライブラリにおける Module クラスの定義}
+ \label{src:module}
+\end{figure}
+
+\figref{src:module} に，Module クラスの定義を示す．
+Module クラスは，インタフェースクラスの ModuleInterface クラスを継承するクラスである．
+ArchHDL でハードウェアを記述する際に，このクラスを継承してモジュールを記述する．
+
+コンストラクタ（7 ～ 9行目）では，自身のポインタを Singleton クラスに渡す．
+ModuleInterface クラスにおいて Init 関数と Always 関数が仮想関数として定義されているため，
+これらの関数を定義する必要がある．
+Module クラスは，Module 子クラスのインタフェースとして定義しているため，
+Init 関数と Always 関数として空の関数を定義している（10，11 行目）．

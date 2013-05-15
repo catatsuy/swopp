@@ -1,13 +1,53 @@
 ## C++ のラムダ関数
 
+C++11 と呼ばれる C++ ISO 標準により，ラムダ関数の仕様が定義された．
+GCC では，バージョン 4.5 よりこの ISO 標準の一部がサポートされ，
+標準ライブラリとしてラムダ関数が利用できるようになった．
 
+我々の提案する ArchHDL では，このラムダ関数を利用する．
+ここでは，C++11 のラムダ関数の機能を ArchHDL のために必要な範囲で述べる．
 
+\begin{figure}[t]
+ \lstinputlisting[language=c++]{src/def_lam.cc.part}
+ \caption{ラムダ関数の定義のみを含む C++ プログラムの例}
+ \label{src:def_lambda}
+\end{figure}
 
+\figref{src:def_lambda} にラムダ関数の定義のみを含む C++ プログラムの例を示す．
+2 行目のコードは引数に `int x` と `int y` をとり，その和を返すラムダ関数の定義である．
+
+ラムダ関数の定義は lambda-introducer と呼ばれる [] \footnote{
+[] 内にキャプチャと呼ばれるラムダ関数の機能を指定する記述をする必要がある．
+ArchHDL では [=] のみを使用するため説明は省略する．
+}
+の記述からはじまる．ラムダ関数の返り値の型は，
+return 文より推測できる場合に省略できる．例に示したラムダ関数の返り値の型は
+int と推測される．
+
+\begin{figure}[t]
+ \lstinputlisting[language=c++]{src/ex_lam.cc}
+ \caption{ラムダ関数を定義して，それを使う C++ プログラムの例}
+ \label{src:ex_lambda}
+\end{figure}
+
+\figref{src:ex_lambda} にラムダ関数を定義して，それを使う C++ のプログラムを示す．
+ラムダ関数を使うために，1 行目のように functional という標準ライブラリをインクルードする．
+
+6，7 行目で， 関数オブジェクト Sum に
+\verb`[=](int x, int y) { return x + y; }`
+というラムダ関数を代入する．
+このラムダ関数は int 型の値を返す関数であり，その型は std::function\<int ()\> となる．
+これにより，Sum は 2 個の int 型の値を引数にとり，その和を返す関数オブジェクトとなる．
+
+8 行目では Sum を呼び出し，返り値を変数 c に代入している．
+引数には，4, 5 行目にある a, b を与えている．
+
+ArchHDL では，ラムダ関数を \figref{src:ex_lambda} のような使い方をしている．
 
 
 ## ArchHDL による RTL モデリング
 
-
+\input{desc_archhdl}
 
 
 
