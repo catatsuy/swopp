@@ -28,16 +28,16 @@ Init 関数には，モジュール内のすべてのワイヤへの継続代入
 これは，Verilog HDL においてモジュール内で定義されている assign 文をすべてこの関数内に記述することに相当する．
 wire クラスのインスタンスにラムダ関数を代入することでワイヤへの継続代入を記述することができる．
 \figref{src:counter}では，6 行目で wire クラスの変数 out に reg クラス の counter の値を返す
-ラムダ関数（[=]() { return counter(); }）を代入している．
+ラムダ関数（\verb/[=]() { return counter(); }/）を代入している．
 ここで，reg クラスのオブジェクトは関数として呼び出すことにより，そのサイクルにおける値を取得することができる．
 このため，先のラムダ関数における counter() によってレジスタの値が取得できる．
 これは，\figref{src:counter_v} の 6 行目に相当する．
 
 Always 関数には，モジュール内のすべてのレジスタへのノン・ブロッキング代入を記述する．
 ArchHDL では，単一クロックの立ち上がりエッジでの制御のみを対象としている．
-これは，Verilog HDL における '' always @(posedge clock)`` ブロック内の記述に相当する．
-reg クラスのインスタンスに$<<=$演算子を用いて値を代入することでノン・ブロッキング代入を記述することができる．
-ArchHDL は，演算子オーバーロードを利用して$<<=$演算子を Verilog HDL における
+これは，Verilog HDL における \verb/always @(posedge clock)/ ブロック内の記述に相当する．
+reg クラスのインスタンスに \verb/<<=/ 演算子を用いて値を代入することでノン・ブロッキング代入を記述することができる．
+ArchHDL は，演算子オーバーロードを利用して \verb/<<=/ 演算子を Verilog HDL における
 ノン・ブロッキング代入に相当する値の代入として実装している．
 \figref{src:counter}では，9 行目で reg クラスの変数 counter に自身の値をインクリメントした値を代入している．
 これは，\figref{src:counter_v}の 8 行目に相当する．
@@ -48,6 +48,7 @@ ArchHDL では，データ型として C++ の整数型を使用している．
 reg クラスと wire クラスのオブジェクトは関数として呼び出すことにより，そのサイクルにおける値を取得することができる．
 
 
+\if0
 \subsection{ArchHDL の利点}
 
 ArchHDL には，次に挙げる利点がある．
@@ -163,8 +164,9 @@ ArchHDL により提供される Step 関数（25行目）を呼び出せばサ�
 ArchHDL を用いた場合と大きく異なる点は 14 行目においてクロックを生成している部分である．
 それ以外の記述については ArchHDL と Verilog HDL で大きな違いはない．
 
+\fi
 
-\subsection{ArchHDL の実装}
+\subsection{ArchHDL の実装} \label{ss:implementation}
 
 ArchHDL のライブラリには，Module クラス，wire クラス，reg クラス，これらの 3 個のクラスのインタフェースクラス，
 Singleton クラスの 7 個のクラスが定義されている．
