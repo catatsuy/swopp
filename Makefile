@@ -1,6 +1,6 @@
 PANDOC = pandoc.my
 OPTS_SET = -f markdown -t latex --include-in-header header.tex -s
-OPTS_VAR = -V fontsize=12pt -V documentclass=ipsj -V addoption=submit,techreq,noauthor
+OPTS_VAR = -V documentclass=ipsj -V addoption=submit,techreq,noauthor,papersize
 
 INPUT = top.tex
 OUTPUT = main.tex
