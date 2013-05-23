@@ -72,6 +72,14 @@ ArchHDL の `Singleton` クラスの `Exec()` メソッド内の
 `for` 文内で呼んでいる．この
 `for` 文を `OpenMP` により並列化できることが期待できる．
 
+\begin{figure}[t]
+ \lstinputlisting[language=c++]{src/exec_openmp.cc}
+ \caption{Exec メソッド内の for 文を OpenMP で並列化したプログラム}
+ \label{src:exec_openmp}
+\end{figure}
+
+並列化されるように OpenMP の指示句を与えたものが \figref{src:exec_openmp} である．
+
 `OpenMP` にはオプションとしてチャンクサイズなどを指定できる．デフォルトはスケジュールタイプが
 `static` でチャンクはなしである．今回の ArchHDL の場合はスケジュールタイプを `dynamic`
 にしたり，チャンクサイズを指定するとデフォルトよりも遅くなることが確認されている．

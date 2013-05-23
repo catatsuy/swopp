@@ -6,7 +6,10 @@ Linux 3.2.0-39-generic， CPU は
 Intel Core i7-3770K CPU @ 3.50GHz，メモリーは
 $16\,\mathrm{GB}$ である．
 
-NC-Verilog/VCS の実行環境は cadserv2 である．
+NC-Verilog/VCS の実行環境は OS が CentOS5.9，カーネルが 64ビットの
+Linux 2.6.18-348.4.1.el5， CPU は
+hogehoge，メモリーは
+$16\,\mathrm{GB}$ である．
 
 
 ## 並列化によらない高速化の評価
@@ -15,7 +18,14 @@ NC-Verilog/VCS の実行環境は cadserv2 である．
 
 $n$ 個のカウンター回路を実行するもの．
 
-ステンシル計算回路での実行結果である．
+\begin{figure}[t]
+ \centering
+ \includegraphics[clip,width=(\textwidth-\columnsep)/2]{stencil}
+ \caption{ステンシル計算回路の Icarus Verilog と比較した実行時間の速度向上比}
+ \label{fig:stencil}
+\end{figure}
+
+\figref{fig:stencil} はステンシル計算回路での実行結果である．
 
 縦軸は Icarus Verilog と比較したそれぞれの速度向上比である．
 
