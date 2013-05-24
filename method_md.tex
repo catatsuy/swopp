@@ -13,7 +13,7 @@ reg::Update() メソッドに時間がかかっている．このメソッドを
 
 \figref{src:reg} に記すように，ver1.0 の ArchHDL の実装では reg インスタンス生成時に set_ を false
 にしておき，ノンブロッキング代入が行われたときだけ true にすることで
-Update() 内の next_ の値を curr_
+reg::Update() 内の next_ の値を curr_
 に代入する処理が next_ の値に変更があった時のみ行われるようにしている．
 
 この set_ 変数を無くすと分岐と変数が 1 つ減る．よってノンブロッキング代入が頻繁に行われる回路では速度が向上すると考えられる．この実装を行ったものを ver1.1 とした．
@@ -22,13 +22,24 @@ Update() 内の next_ の値を curr_
 
 ### ダブルバッファリング
 
-reg インスタンスの next_ の値が次サイクルの reg インスタンスの curr_ になる．
+\ref{ss:implementation} 章で述べたように
+reg インスタンスの next_ の値が次サイクルになる前に reg インスタンスの curr_ に代入される．
 そこで偶数回目の実行と奇数回目の実行で next_ と curr_
 を入れ替えれば（ダブルバッファリング）代入が減ることが期待できる．
 
+\begin{figure}[t]
+ \begin{center}
+  \input{img/double_buffer}
+ \end{center}
+ \caption{ダブルバッファリングのイメージ}
+ \label{fig:double_buffer}
+\end{figure}
+
+\figref{fig:double_buffer} はダブルバッファリングのイメージである．つまり cycle1 では vala_ を curr_ として使用する．valb_ は next_ として使用する．サイクルが終了したら cycle2 に切り替える．これにより cycle1 の時点で next_ であった valb_ には値が書き込まれているので curr_ として使用出来る．これにより毎サイクル行われる代入処理を減らせる．
+
 しかしこのダブルバッファリングでは reg への書き込みが行われなかった場合に
-reg のその時の next_ の値に更新が入らない．よって次の
-curr_ に古い値が格納されたままになってしまうので単純な実装では Verilog HDL と同じ挙動にならない．
+reg のその時の next_ の値に更新が入らない．次のサイクルではその next_ がそのまま
+curr_ として使用されるので古い値が使われてしまう．そのため単純な実装では Verilog HDL と同じ挙動にならない．
 
 しかし常に reg への書き込みが行われるカウンター回路で簡易的な実装で試したところ効果があった．
 なので並列化しない場合は高速化の手法として使える可能性がある．
@@ -40,7 +51,7 @@ curr_ に古い値が格納されたままになってしまうので単純な�
 
 ### next_ から curr_ への代入をメモリーコピーにする
 
-\ref{s:no_set} 節で述べた実装を行うと ver1.1 より
+\ref{s:no_set} 節で述べた実装を行うと
 Update() メソッド内で行なっているすべての reg の next_
 の値を curr_ への代入は毎サイクル実行されることになる．
 
@@ -63,11 +74,11 @@ reg インスタンスは curr_, next_ の実体は持たず，ポインタと�
 
 ## 並列化による高速化 \label{ss:parallel}
 
-Module::Always() メソッドと
-reg::Update() メソッドは毎サイクル，各クラスの全インスタンスでメソッドが呼び出されている．これは
+\figref{src:class_singleton} に示すように
 ArchHDL の Singleton クラスの Exec() メソッド内の
-for 文内で呼んでいる．この
-for 文を OpenMP により並列化できることが期待できる．
+for 文内で Module::Always() メソッドと
+reg::Update() メソッドは毎サイクル，各クラスの全インスタンスで呼び出されている．
+この for 文を OpenMP により並列化できることが期待できる．
 
 \begin{figure}[t]
  \lstinputlisting[language=c++]{src/exec_openmp.cc}

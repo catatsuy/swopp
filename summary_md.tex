@@ -72,5 +72,5 @@ gprof を利用する．
 \end{table}
 
 
-\tabref{table:stencil_prof} はステンシル計算回路で実行したプロファイリング結果である．ArchHDL の実装では，ArchHDL::Step() と reg::Update() と Module::Always() は実行回数がとても多い．ただし Module::Always() はユーザ側が記述するので高速に出来る余地はほとんどない．よって ArchHDL::Step() と reg::Update() の実行を高速化することを \ref{s:method} 章で考える．
+\tabref{table:stencil_prof} はステンシル計算回路で実行したプロファイリング結果である．ArchHDL の実装では，ArchHDL::Step() と reg::Update() と Module::Always() の実行回数がとても多い．ただし Module::Always() はユーザ側が記述するので高速に出来る余地はほとんどない．よって ArchHDL::Step() と reg::Update() の実行を高速化することを \ref{s:method} 章で考える．
 
