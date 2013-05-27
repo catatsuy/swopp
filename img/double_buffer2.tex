@@ -1,0 +1,23 @@
+\setlength{\unitlength}{1truemm} %picture環境の単位が1mmになる
+\begin{picture}(85,33)(0,-3)
+ \put(35,20){\framebox(10,10){}}
+ \put(55,20){\framebox(10,10){}}
+ \put(35,0){\framebox(10,10){}}
+ \put(55,0){\framebox(10,10){}}
+ \put(25,25){\vector(1,0){8}}
+ \put(25,27){\texttt{write}}
+ \put(67,25){\vector(1,0){8}}
+ \put(67.5,27){\texttt{read}}
+ % bottom
+ \put(33,5){\vector(-1,0){8}}
+ \put(25.5,7){\texttt{read}}
+ \put(75,5){\vector(-1,0){8}}
+ \put(67.5,7){\texttt{write}}
+ % round arrow
+ \qbezier(2.5,8)(0,15)(2.5,22)
+ \put(2.5,22){\vector(1,2){1}}
+ \put(2.5,8){\vector(1,-2){1}}
+ % cycle
+ \put(5,23){\texttt{odd cycle}}
+ \put(5,6){\texttt{even cycle}}
+\end{picture}

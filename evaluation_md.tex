@@ -1,15 +1,25 @@
-本章では Icarus Verilog/NC-Verilog/VCS での論理シュミレーションの実行時間と
+本章では Icarus Verilog/NC-Verilog \cite{ncverilog}/VCS \cite{vcs} での論理シュミレーションの実行時間と
 ArchHDL での実行時間を比較し，評価する．
 
-Icarus Verilog/ArchHDL の実行環境は OS が Ubuntu12.04，カーネルが 64ビットの
-Linux 3.2.0-39-generic， CPU は
-Intel Core i7-3770K CPU @ 3.50GHz，メモリーは
-$16\,\mathrm{GB}$ である．
+\begin{table}[t]
+ \caption{実行環境一覧}
+ \label{table:exec_env}
+ \begin{center}
+  \begin{tabular}{lcc} \toprule
+         &  Icarus Verilog/ArchHDL  &  NC-Verilog/VCS   \\ \midrule
+  OS     &  Ubuntu12.04             &  CentOS5.9        \\
+  カーネル &  Linux 3.2.0-39-generic  &  Linux 2.6.18-348.4.1.el5   \\
+  CPU    &  \multicolumn{2}{c}{Intel Core i7-3770K CPU @ 3.50GHz}   \\
+  メモリ  &  \multicolumn{2}{c}{$16\,\mathrm{GB}$}  \\ \bottomrule
+  \end{tabular}
+ \end{center}
+\end{table}
 
-NC-Verilog/VCS の実行環境は OS が CentOS5.9，カーネルが 64ビットの
-Linux 2.6.18-348.4.1.el5， CPU は
-hogehoge，メモリーは
-$16\,\mathrm{GB}$ である．
+\tabref{table:exec_env} は Icarus Verilog/ArchHDL と NC-Verilog/VCS の実行環境の一覧である．
+
+両者の実行環境が異なる理由は NC-Verilog と VCS が RedHat 系しか実行環境が用意されておらず，また有償ツールであるためソースコードが公開されていない．そのためコンパイルすることもできない．しかし CentOS5.9 は gcc のバージョンが 4.1.2 である．\ref{ss:modeling} 節で述べたように ArchHDL では C++11 のラムダ関数を用いて記述するため gcc のバージョンは 4.5 以上が必要である．これらの事情によりスペックは同じだが異なる OS を使用して評価することにした．
+
+今回の評価では現実的なハードウェアとしてステンシル計算回路を用いる．またカウンター回路と XORSHIFT による乱数生成器をマイクロベンチマークとして使用した．
 
 
 ## ステンシル計算回路による評価
