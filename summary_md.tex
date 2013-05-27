@@ -1,5 +1,4 @@
 \if0
-
 ## C++ のラムダ関数
 
 C++11 と呼ばれる C++ ISO 標準により，ラムダ関数の仕様が定義された．
@@ -55,22 +54,42 @@ ArchHDL では，ラムダ関数を \figref{src:ex_lambda} のような使い方
 ## ArchHDL のプロファイリング \label{ss:profiling}
 
 今回のプロファイリングは各メソッドの実行にどの程度時間がかかっているかを調べる．プロファイリングには
-gprof を利用する．
+gprof を利用する．今回は題材としてはステンシル計算回路を用いる．
 
 \begin{table}[t]
  \caption{ステンシル計算回路でのプロファイリング結果}
  \label{table:stencil_prof}
  \begin{center}
   % \setlength{\tabcolsep}{3pt}
-  \begin{tabular}{lc} \toprule
+  \begin{tabular}{lr} \toprule
   関数名 & 実行時間に占める割合 (\%) \\ \midrule
-  ArchHDL::Step() & 11.09 \\
   reg::Update() （合計） & 24.21 \\
+  ArchHDL::Step() & 11.09 \\
   brk & 10.72 \\ \bottomrule
   \end{tabular}
  \end{center}
 \end{table}
 
+\begin{table}[t]
+ \caption{ステンシル計算回路でのメソッド呼び出し回数結果}
+ \label{table:stencil_method_call_count}
+ \begin{center}
+  % \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{lr} \toprule
+  関数名 & 実行回数 \\ \midrule
+  ArchHDL::Step()   &     328,425 \\
+  reg::Update()     & 325,469,175 \\
+  Module::Always()  &  43,680,525 \\ \bottomrule
+  \end{tabular}
+ \end{center}
+\end{table}
 
-\tabref{table:stencil_prof} はステンシル計算回路で実行したプロファイリング結果である．ArchHDL の実装では，ArchHDL::Step() と reg::Update() と Module::Always() の実行回数がとても多い．ただし Module::Always() はユーザ側が記述するので高速に出来る余地はほとんどない．よって ArchHDL::Step() と reg::Update() の実行を高速化することを \ref{s:method} 章で考える．
+
+\tabref{table:stencil_prof} はステンシル計算回路で実行したプロファイリング結果である．brk はデータセグメントのサイズを変更する関数である．
+
+このように ArchHDL は，ArchHDL::Step() と reg::Update() の実行時間が全体の実行時間に占める割合がとても大きい．よって ArchHDL::Step() と reg::Update() の実行を高速化することを \ref{s:method} 章で考える．
+
+\tabref{table:stencil_method_call_count} はステンシル計算回路でのそれぞれのメソッド呼び出し回数である．Module::Always() はユーザが定義するので ArchHDL 側で高速化が出来る余地はない．よってそれ以外の ArchHDL::Step() と reg::Update() の実行を高速にすることが高速化につながる．
+
+
 
