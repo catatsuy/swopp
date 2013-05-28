@@ -2,7 +2,7 @@
 ## C++ のラムダ関数
 
 C++11 と呼ばれる C++ ISO 標準により，ラムダ関数の仕様が定義された．
-GCC では，バージョン 4.5 よりこの ISO 標準の一部がサポートされ，
+gcc では，バージョン 4.5 よりこの ISO 標準の一部がサポートされ，
 標準ライブラリとしてラムダ関数が利用できるようになった．
 
 我々の提案する ArchHDL では，このラムダ関数を利用する．
@@ -54,7 +54,7 @@ ArchHDL では，ラムダ関数を \figref{src:ex_lambda} のような使い方
 ## ArchHDL のプロファイリング \label{ss:profiling}
 
 今回のプロファイリングは各メソッドの実行にどの程度時間がかかっているかを調べる．プロファイリングには
-gprof を利用する．今回は題材としてはステンシル計算回路を用いる．
+gprof \cite{gprof}を利用する．今回は題材としてステンシル計算回路を用いる．
 
 \begin{table}[t]
  \caption{ステンシル計算回路でのプロファイリング結果}
@@ -85,9 +85,9 @@ gprof を利用する．今回は題材としてはステンシル計算回路�
 \end{table}
 
 
-\tabref{table:stencil_prof} はステンシル計算回路で実行したプロファイリング結果である．brk はデータセグメントのサイズを変更する関数である．
+\tabref{table:stencil_prof} はステンシル計算回路で実行したプロファイリング結果である．実行時間の大きかった上位 3 つである．reg::Update() はインスタンスメソッドなので全インスタンスでの実行時間の合計である．brk はデータセグメントのサイズを変更する関数である．
 
-このように ArchHDL は，ArchHDL::Step() と reg::Update() の実行時間が全体の実行時間に占める割合がとても大きい．よって ArchHDL::Step() と reg::Update() の実行を高速化することを \ref{s:method} 章で考える．
+このように ArchHDL は，ArchHDL::Step() と reg::Update() の実行時間が全体の実行時間に占める割合が非常に大きい．よって ArchHDL::Step() と reg::Update() の実行を高速化することを \ref{s:method} 章で考える．
 
 \tabref{table:stencil_method_call_count} はステンシル計算回路でのそれぞれのメソッド呼び出し回数である．Module::Always() はユーザが定義するので ArchHDL 側で高速化が出来る余地はない．よってそれ以外の ArchHDL::Step() と reg::Update() の実行を高速にすることが高速化につながる．
 
