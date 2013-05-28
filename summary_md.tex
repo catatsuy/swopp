@@ -53,7 +53,7 @@ ArchHDL では，ラムダ関数を \figref{src:ex_lambda} のような使い方
 
 ## ArchHDL のプロファイリング \label{ss:profiling}
 
-今回のプロファイリングは各メソッドの実行にどの程度時間がかかっているかを調べる．プロファイリングには
+ArchHDL の高速化に向けてプロファイリングを行う．プロファイリングは各メソッドの実行にどの程度時間を要しているかを調べる．プロファイリングには
 gprof \cite{gprof}を利用する．今回は題材としてステンシル計算回路を用いる．
 
 \begin{table}[t]
@@ -89,7 +89,7 @@ gprof \cite{gprof}を利用する．今回は題材としてステンシル計�
 
 このように ArchHDL は，ArchHDL::Step() と reg::Update() の実行時間が全体の実行時間に占める割合が非常に大きい．よって ArchHDL::Step() と reg::Update() の実行を高速化することを \ref{s:method} 章で考える．
 
-\tabref{table:stencil_method_call_count} はステンシル計算回路でのそれぞれのメソッド呼び出し回数である．Module::Always() はユーザが定義するので ArchHDL 側で高速化が出来る余地はない．よってそれ以外の ArchHDL::Step() と reg::Update() の実行を高速にすることが高速化につながる．
+\tabref{table:stencil_method_call_count} はステンシル計算回路でのそれぞれのメソッド呼び出し回数である．Module::Always() はユーザが定義するので ArchHDL 側で高速化が出来る余地はない．よってそれ以外の ArchHDL::Step() と reg::Update() の実行を高速にする．
 
 
 
