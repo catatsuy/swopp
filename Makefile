@@ -7,10 +7,8 @@ OUTPUT = main.tex
 OUTPUTDVI = $(OUTPUT:%.tex=%.dvi)
 
 all:
-	make tolatex
 	make topdf
 addtoc:
-	make tolatex
 	platex $(OUTPUT)
 	make topdf
 tolatex:

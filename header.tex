@@ -1,0 +1,43 @@
+\AtBeginDvi{\special{papersize=210truemm,297truemm}}
+\usepackage[sc]{mathpazo}
+\usepackage[scaled]{helvet}
+\usepackage[scaled]{beramono}
+\usepackage[bold]{otf}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage[dvipdfmx,pstarrows]{curve2e}%{pict2e}
+\usepackage{textcomp,mediabb,booktabs,ebezier}
+\usepackage[final]{listings}
+\lstset{                 %listingsの設定
+numbers=left,            %行番号を左
+numberstyle=\scriptsize, %
+stepnumber=1,            %1行おきに行番号を
+numbersep=1zw,           %ソースと行番号の間隔
+lineskip=-0.5zw,         %行間隔 要調整
+basicstyle=\ttfamily,     %ttfamily
+xleftmargin=15pt,
+}
+\usepackage{caption,tabularx} 
+\captionsetup[table]{skip=.5\baselineskip}
+\usepackage{jlisting}
+%\newcommand{\unit}[1]{\ifmmode\mathrm{\,[#1]}\else $\mathrm{[#1]}$\fi}%単位に使用 数式中では空白を本文中では空白なし
+\graphicspath{{img/}}
+\title{ArchHDLで記述したハードウェアの\\ 論理シュミレーションの高速化}
+
+\affiliate{TOKYOTECH_B}{東京工業大学 工学部情報工学科\\
+Department of Computer Science, Tokyo Institute of Technology
+}
+
+\affiliate{TOKYOTECH}{東京工業大学 大学院情報理工学研究科\\
+Graduate School of Information Science and Engineering, Tokyo Institute of Technology
+}
+
+\author{金子 達哉}{Kaneko Tatsuya}{TOKYOTECH_B}[kaneko@arch.cs.titech.ac.jp]
+\author{佐藤 真平}{Sato Shimpei}{TOKYOTECH}[satos@arch.cs.titech.ac.jp]
+\author{吉瀬 謙二}{Kise Kenji}{TOKYOTECH}[kise@cs.titech.ac.jp]
+
+\setcounter{巻数}{54}%vol53=2012
+\setcounter{号数}{2}
+\setcounter{page}{1}
+
+% color
+\definecolor{lightgray}{gray}{.8}

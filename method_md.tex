@@ -23,14 +23,15 @@
 ###  \label{sss:mem_copy}
 
 \begin{figure}[t]
- \begin{center}
-  \input{img/regs}
- \end{center}
+ \centering
+ \includegraphics[clip,width=\linewidth-30pt]{simple_reg}
  \caption{シンプルな実装による reg クラスのインスタンスの処理の様子}
  \label{fig:regs}
 \end{figure}
 
-\figref{fig:regs} は現在の reg クラスのインスタンスのイメージである．\ref{sss:no_set} 節で述べたデータ変更の有無による条件分岐の除去を行うと reg::Update() メソッド内で行なっている reg クラスのインスタンスの現在の値を格納する変数に次サイクルの値を代入する処理は毎サイクル全 reg クラスのインスタンスで実行されることになる．
+\figref{fig:regs} は現在の reg クラスのインスタンスの処理の様子である．reg インスタンスが灰色に塗られており，左からクラスのメタデータ・next_・curr_ を表している．左側の大きな枠が \figref{src:class_singleton} で示した実装の \verb`std::vector` 型の registers_ である．
+
+\ref{sss:no_set} 節で述べたデータ変更の有無による条件分岐の除去を行うと reg::Update() メソッド内で行なっている reg クラスのインスタンスの現在の値を格納する変数に次サイクルの値を代入する処理は毎サイクル全 reg クラスのインスタンスで実行されることになる．
 
 この代入する処理と reg::Update() メソッド自体の関数呼び出しの
 2 つのオーバーヘッドが\tabref{table:stencil_prof} で示すようにArchHDL の高速化を妨げている．
@@ -44,7 +45,7 @@
 \end{figure}
 
 
-そこで\figref{fig:mem_copy} のように全 reg クラスのインスタンスは現在の値と次サイクルの値の実体は持たず，ポインタを保持するようにする．実体はそれぞれ配列として持つ．そして次サイクルに移る前に行われる現在の値に次サイクルの値を代入する処理をメモリコピーになるように変更する．これにより代入する処理が高速になることが期待される．
+そこで\figref{fig:mem_copy} のように全 reg クラスのインスタンスは現在の値と次サイクルの値の実体は持たず，ポインタを保持するようにする．実体はそれぞれ配列として持つ．\figref{fig:regs} で示すように次サイクルに移る前に行われる curr_ に next_ の値を代入する処理は registers_ から reg クラスのインスタンスが存在するアドレスを調べる必要がある．しかし \figref{fig:mem_copy} に示すようにすれば単純なメモリの並びを代入するだけになる．これにより代入する処理が高速になることが期待される．
 
 またこの手法によって reg::Update() 自体の関数呼び出しがなくなり，関数呼び出しのオーバーヘッドがなくなる．
 

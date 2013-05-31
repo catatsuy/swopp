@@ -1,25 +1,46 @@
 \setlength{\unitlength}{1truemm} %picture環境の単位が1mmになる
-\begin{picture}(70,20)(0,93)
- \put(5,100){\framebox(20,5){}}
- \put(15,100){\line(0,1){5}}
- \put(20,100){\line(0,1){5}}
+\begin{picture}(70,35)(-5,80)
+ \put(8,100){\framebox(26,5){}}
+ \put(8,100){\color{lightgray}{\rule{26truemm}{5truemm}}}
+ \put(18,100){\line(0,1){5}}
+ \put(26,100){\line(0,1){5}}
 
- \put(14,106){\texttt{next}}
- \put(21,106){\texttt{curr}}
+ \put(20,106){\texttt{next\_}}
+ \put(28,106){\texttt{curr\_}}
 
- \put(17.5,99){\line(0,-1){3}}
- \put(17.5,96){\line(1,0){5}}
- \put(22.5,96){\vector(0,1){3}}
+ \put(22.5,99){\line(0,-1){3}}
+ \put(22.5,96){\line(1,0){7}}
+ \put(29.5,96){\vector(0,1){3}}
 
- \put(35,100){\framebox(20,5){}}
- \put(45,100){\line(0,1){5}}
- \put(50,100){\line(0,1){5}}
+ \put(37,100){\framebox(26,5){}}
+ \put(37,100){\color{lightgray}{\rule{26truemm}{5truemm}}}
+ \put(47,100){\line(0,1){5}}
+ \put(55,100){\line(0,1){5}}
 
- \put(47.5,99){\line(0,-1){3}}
- \put(47.5,96){\line(1,0){5}}
- \put(52.5,96){\vector(0,1){3}}
+ \put(51.5,99){\line(0,-1){3}}
+ \put(51.5,96){\line(1,0){7}}
+ \put(58.5,96){\vector(0,1){3}}
 
- \put(60,102.5){\circle*{1}}
- \put(62,102.5){\circle*{1}}
- \put(64,102.5){\circle*{1}}
+ \put(65,102.5){\circle*{1}}
+ \put(67,102.5){\circle*{1}}
+ \put(69,102.5){\circle*{1}}
+
+ % vector<>
+ \put(0,110){\line(0,-1){27}}
+ \put(-5,110){\line(0,-1){27}}
+ \put(0,110){\line(-1,0){5}}
+ \put(0,105){\line(-1,0){5}}
+ \put(0,100){\line(-1,0){5}}
+ \put(0,95){\line(-1,0){5}}
+
+ % pointer1
+ \Dline(0,107.5)(10,107.5){1.1}
+ \put(10,107.5){\vector(0,-1){2.2}}
+
+ % pointer2
+ \Dline(0,102.5)(5,102.5){1.1}
+ \Dline(5,102.5)(5,92.5){1.1}
+ \Dline(5,92.5)(39,92.5){1.1}
+ \Dline(39,92.5)(39,97){1.1}
+ \put(39,98){\vector(0,1){2}}
 \end{picture}

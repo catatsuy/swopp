@@ -33,7 +33,6 @@
 
 # user
 
-*.tex
 !*_md.tex
 *.pdf
 

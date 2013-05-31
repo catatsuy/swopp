@@ -1,0 +1,36 @@
+プロセッサなどのハードウェア設計は，アーキテクチャ設計・論理設計・回路設計・物理設計といったフローで行われる．
+アーキテクチャ設計と論理設計においては，RTL (Register Transfer Level)
+のシミュレーションが不可欠である．このために Verilog HDL
+などのハードウェア記述言語が用いられることが一般的である．
+
+そこで我々は C++ 言語上で RTL モデリングを行う新しい言語を提供する
+ArchHDL を提案している \cite{satos:archhdl}． ArchHDL は Verilog HDL
+に近い記述でハードウェアの論理検証を行うことができる．
+
+ArchHDL には次に挙げる利点がある．
+
+\begin{itemize}
+\itemsep1pt\parskip0pt\parsep0pt
+\item
+  ハードウェアモジュール間の接続の記述が容易
+\item
+  論理シュミレーションが高速
+\end{itemize}
+
+ArchHDL は Icarus Verilog \cite{iverilog}と比較して高速である．
+
+しかし一部のハードウェアシュミレーションにおいて有償の Verilog
+シュミレーションと比較して高速ではないこともあった．
+
+そこで条件分岐を減らす，メモリ配置を工夫する，OpenMP
+によって一部を並列化する，と高速化ができることに着目し，従来の ArchHDL
+を更に高速化できることを突き止めた．
+
+本論文では様々な Verilog シュミレーションツールと比較して， ArchHDL
+と今回の高速化手法がどの程度高速なのか考察する．
+
+本論文の構成は以下の通りである． \ref{s:summary} 章で，ArchHDL
+の概要を述べる． \ref{s:method} 章で， ArchHDL
+のプロファイリングとその結果から高速化手法を提案する．
+\ref{s:evaluation} 章で，様々な Verilog シュミレーションツールと比較して
+ArchHDL と今回の高速化手法の評価を行う．
