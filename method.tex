@@ -46,43 +46,46 @@ reg::Update() の処理を高速化することを考える．
 
 \figref{fig:regs} はシンプルな実装による reg クラスのインスタンスの処理の様子である．\figref{src:class_singleton}
 の 44 行から 46 行の処理を表している．reg クラスのインスタンスが灰色に塗られており，左からクラスのメタデータ，next\_，curr\_
-を表している．左側の大きな枠が示した実装の \verb`std::vector` 型の registers\_ である．
+を表している．左側の大きな枠が\figref{src:class_singleton} の 18 行の \verb`std::vector` 型の registers\_ である．
 実線矢印は代入を表し．点線矢印はポインタ参照を表す．
 
-registers\_ の値を上から順に辿る．最初の reg クラスのインスタンスの reg::Update() メソッドを呼び，next\_ の値が curr\_ に代入される．これを全 reg クラスのインスタンスにおいて行う．
+ArchHDL ではノンブロッキング代入をシュミレーションするために registers\_ の値を上から順に辿り，reg クラスの各インスタンスのポインタを取得する．そして reg クラスの全インスタンスの reg::Update() メソッドを呼ぶ．
 
 \ref{sss:no_set} 節で述べたデータ変更の有無による条件分岐の除去を行うと
 reg::Update() メソッド内で行なっている reg
 クラスのインスタンスの curr\_ に next\_ の値を代入する処理は毎サイクル全
 reg クラスのインスタンスで実行されることになる．
 
-この代入する処理と reg::Update() メソッド自体の関数呼び出しの 2
+この代入する処理と reg::Update() メソッドの関数呼び出しの 2
 つのオーバーヘッドが\tabref{table:stencil_prof} で示すようにArchHDL
 の高速化を妨げている．
 
 \begin{figure}[t]
  \centering
  \includegraphics[clip,width=\linewidth-30pt]{mem_copy}
- \caption{値を配列として格納しポインタ参照を削減するようにした reg クラスのインスタンスの処理の様子}
+ \caption{値を配列として格納しポインタ参照を削減するように変更した reg クラスのインスタンスの処理の様子}
  \label{fig:mem_copy}
 \end{figure}
 
-\figref{fig:mem_copy} に値を配列として格納しポインタ参照を削減するようにした reg クラスのインスタンスの処理の様子を示す．reg クラスのインスタンスが灰色に塗られており，左からクラスのメタデータ，next\_，curr\_ を表している．
-下の枠が next\_ と curr\_ の値をまとめた配列であり，ここでは next collections, curr collections と呼ぶ．
+\figref{fig:mem_copy} に提案手法を示す．\figref{fig:mem_copy} では値を配列として格納しポインタ参照を削減するように変更した reg クラスのインスタンスの処理の様子を表す．reg クラスのインスタンスが灰色に塗られており，左からクラスのメタデータ，\&next\_，\&curr\_ を表している．\&next\_，\&curr\_ は next\_, curr\_ のポインタである．
+下の枠が next\_, curr\_ の値をまとめた配列であり，ここでは next collections, curr collections と呼ぶ．
 実線矢印は代入を表し．点線矢印はポインタ参照を表す．
 
-全 reg クラスのインスタンスは現在の値と次サイクルの値の実体は持たず，ポインタを保持するようにする．実体はそれぞれ配列として持つ．
+このように，全 reg クラスのインスタンスは現在の値と次サイクルの値の実体は持たず，ポインタを保持するように変更している．
 
-次サイクルに移る前に行われる curr\_ に next\_ の値を代入する処理は \figref{fig:regs} で示すようにシンプルな実装では registers\_ から reg クラスのインスタンスが存在するアドレスを調べる必要がある．
-しかし値を配列として格納しポインタ参照を削減するようにすると \figref{fig:mem_copy} に示すように単純なメモリの並びを代入するだけになる．これにより代入する処理が高速になることが期待される．
+次サイクルに移る前に行われる curr\_ に next\_ の値を代入する処理は \figref{fig:regs} で示すシンプルな実装では registers\_ から reg クラスのインスタンスが存在するアドレスを調べる必要がある．
+しかし値を配列として格納しポインタ参照を削減すると \figref{fig:mem_copy} に示すように単純な代入となる．これにより代入する処理が高速になることが期待される．
 
-またこの手法によって reg::Update() 自体の関数呼び出しがなくなり，関数呼び出しのオーバーヘッドもなくなる．
+これにより今まで飛び飛びのアドレスに格納されていた next\_ と curr\_ のメモリ配置がまとまるので高速になることが期待される．
+また reg::Update() の関数呼び出しが不要となり，関数呼び出しのオーバーヘッドもなくなる．
 
-実装は 2 つの大きな配列を用意する．その配列内に reg クラスのインスタンス宣言時に記述した型に応じた領域を確保する．
-reg クラスのコンストラクタで next\_ と curr\_ の値が存在するアドレスを取得し，インスタンスでそれを保持する．
+提案手法の実装について述べる．next collections, curr collections として 2 つの十分大きな \verb/unsigned int/ 型の配列を用意する．記述された型に応じて，reg クラスのコンストラクタが next\_, curr\_ それぞれの領域を next collections, curr collections に確保する．
+参照の高速化のために 4 バイトの倍数として領域を確保する．
+確保された next\_ と curr\_ のアドレスを取得し，インスタンス内の \&next\_, \&curr\_ がそれを保持する．
 これまで reg クラスの全インスタンスの reg::Update() メソッドを呼び出していたところを next\_ collections から curr\_ collections の値コピーに変更する．
 
 
+\if0
 \subsubsection{ダブルバッファリング}
 
 これまでの実装では \ref{ss:implementation} 章で述べたように reg
@@ -127,18 +130,25 @@ reg
 
 以上の理由から本論文ではダブルバッファリングによる評価は行わない．
 
+\fi
+
 \subsection{並列化による高速化 \label{ss:parallel}}
 
-一方で並列化による高速化では \figref{src:class_singleton} に示すように
-ArchHDL の Singleton クラスの Exec() メソッド内の for 文内で
-Module::Always() メソッドと reg::Update()
-メソッドは毎サイクル，各クラスの全インスタンスで呼び出されている．
-モジュールの実行とレジスタの更新はそれぞれ独立に行えるので容易に並列化が可能である．
+これまで逐次実行による高速化を考えてきたが，本節では並列化による高速化について考える．
 
-今回は for 文などの並列化を行いたい部分の前に \verb/#pragma omp/
-から始まる OpenMP
-指示文を与えるだけで並列化プログラミングを行える便利なライブラリである
-OpenMP \cite{openmp}を使用する．
+並列化による高速化を考える．\figref{src:class_singleton} の 40 行〜 47 行に示すように
+毎サイクル，Module クラスと reg クラスの全インスタンスの Module::Always() メソッドと reg::Update() メソッドが呼び出されている．
+
+\figref{src:class_singleton} の41行〜43行に示している Module::Always() メソッドはユーザが自由に記述できる．
+そのため各 Module クラスのインスタンスで独立に Module::Always() メソッドが実行できる保証はない．しかしここでは独立に実行できると仮定する．
+このため\figref{src:class_singleton} の41行〜43行に示している Module::Always() メソッドの実行は並列化ができる．
+独立に実行できる条件は今後の研究課題とする．
+
+\figref{src:class_singleton} の 44 行〜 46 行に示しているレジスタの更新は\figref{fig:regs} の実線で表されている．各インスタンスで独立に行えるので並列化が可能である．
+
+提案手法について述べる．以上のことから\figref{src:class_singleton} の41行〜47行に示している
+Module クラスと reg クラスの全インスタンスの Module::Always() メソッドと reg::Update() メソッドの実行は並列化が可能である．
+よってこの部分を並列化する．並列化には OpenMP~\cite{openmp} を用いる．
 
 \begin{figure}[t]
  \lstinputlisting[language=c++]{src/exec_openmp.cc}
@@ -146,10 +156,11 @@ OpenMP \cite{openmp}を使用する．
  \label{src:exec_openmp}
 \end{figure}
 
-8 スレッドで並列化されるように OpenMP 指示文を与えたものが
-\figref{src:exec_openmp} である．
+\figref{src:exec_openmp} は 8 スレッドで並列化されるように OpenMP 指示文を与えたソースコードである．
+4 行目と 8 行目は for 文の実行を並列化する OpenMP 指示文である．
+2 行目は並列化を何スレッドで行うかを与えている．今回は 8 をスレッド数に指定している．この数字は環境によって変わる．
 
-一般に並列化を行う場合は各スレッド対して均等に負荷を与えることが重要である．for
+一般に並列化を行う場合は各スレッドに対して均等に負荷を与えることが重要である．for
 文の負荷を分散するスケジュール方法として静的に決定する static
 と，動的に決定する dynamic など複数存在する．今回の ArchHDL
 の場合，各モジュールと各レジスタで実行時間が大幅に変わるというのは考えにくい．よって動的に決定するオーバーヘッドを考えると
