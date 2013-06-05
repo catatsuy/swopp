@@ -52,23 +52,22 @@ ArchHDL では，ラムダ関数を \figref{src:ex_lambda}
 
 \input{desc_archhdl}
 
-\subsection{ArchHDL のプロファイリング \label{ss:profiling}}
+\subsection{ArchHDL の性能解析 \label{ss:profiling}}
 
-ArchHDL
-の高速化に向けてプロファイリングを行う．プロファイリングは各メソッドの実行にどの程度時間を要しているかを調べる．プロファイリングには
-gprof
-\cite{gprof}を利用する．今回は題材としてステンシル計算回路を用いる．
+ArchHDL の高速化に向けて性能解析を行う．
+各メソッドの実行にどの程度時間を要しているかを調べる．
+性能解析には gprof~\cite{gprof}を利用する．
 
 \begin{table}[t]
- \caption{ステンシル計算回路でのプロファイリング結果}
+ \caption{ステンシル計算回路での性能解析の結果．実行時間に占める割合が大きい 3 つの関数を示した．}
  \label{table:stencil_prof}
  \begin{center}
   % \setlength{\tabcolsep}{3pt}
-  \begin{tabular}{lr} \toprule
-  関数名 & 実行時間に占める割合 (\%) \\ \midrule
-  reg::Update() （合計） & 24.21 \\
+  \begin{tabular}{l|r} \hline
+  関数名 & 実行時間に占める割合 (\%) \\ \hline
+  reg::Update() & 24.21 \\
   ArchHDL::Step() & 11.09 \\
-  brk & 10.72 \\ \bottomrule
+  brk & 10.72 \\ \hline
   \end{tabular}
  \end{center}
 \end{table}
@@ -78,20 +77,22 @@ gprof
  \label{table:stencil_method_call_count}
  \begin{center}
   % \setlength{\tabcolsep}{3pt}
-  \begin{tabular}{lr} \toprule
-  関数名 & 実行回数 \\ \midrule
+  \begin{tabular}{l|r} \hline
+  関数名 & 実行回数 \\ \hline
   ArchHDL::Step()   &     328,425 \\
   reg::Update()     & 325,469,175 \\
-  Module::Always()  &  43,680,525 \\ \bottomrule
+  Module::Always()  &  43,680,525 \\ \hline
   \end{tabular}
  \end{center}
 \end{table}
 
-\tabref{table:stencil_prof}
-はステンシル計算回路で実行したプロファイリング結果である．実行時間の大きかった上位
-3 つである．reg::Update()
-はインスタンスメソッドなので全インスタンスでの実行時間の合計である．brk
-はデータセグメントのサイズを変更する関数である．
+\tabref{table:stencil_prof} にステンシル計算回路での性能解析の結果を示す．
+実行時間に占める割合の大きかった上位 3 つを示した．
+これらの関数が全実行時間に占める割合は 46.02\% である．
+これらのメソッドの実行時間の割合はそれぞれ排他的である．
+
+最も実行時間の割合が大きい reg::Update() はインスタンスメソッドなので全インスタンスでの実行時間の合計である．
+brk はデータセグメントのサイズを変更する関数である．
 
 このように ArchHDL は，ArchHDL::Step() と reg::Update()
 の実行時間が全体の実行時間に占める割合が非常に大きい．よって
