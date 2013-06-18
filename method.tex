@@ -1,8 +1,5 @@
 \subsection{最適化の方針}
 
-ここでは \ref{ss:profiling} 章で述べたように，ArchHDL::Step() と
-reg::Update() の処理を高速化することを考える．
-
 最適化の方針として逐次プログラミングにおける最適化と並列化における最適化の両方を考える．
 
 \subsection{逐次プログラムにおける高速化手法}
@@ -27,9 +24,7 @@ reg::Update() の処理を高速化することを考える．
 変数を用いて不要な代入を避けている．reg
 クラスのインスタンスの更新頻度が低い回路であればこの実装が効率的である．
 
-次にブロッキング代入について考える．reg
-クラスのインスタンスにブロッキング代入が行われた時に curr\_
-の値を書き換える．
+次にブロッキング代入について考える．reg クラスのインスタンスにブロッキング代入が行われた時に curr\_ の値を書き換える．
 
 提案手法について述べる．この set\_ 変数が true
 の時のみ代入するのではなく，次サイクルに移る前に next\_ の値を curr\_
@@ -45,7 +40,7 @@ reg::Update() の処理を高速化することを考える．
 \end{figure}
 
 \figref{fig:regs} はシンプルな実装による reg クラスのインスタンスの処理の様子である．\figref{src:class_singleton}
-の 44 行から 46 行の処理を表している．reg クラスのインスタンスが灰色に塗られており，左からクラスのメタデータ，next\_，curr\_
+の 44 行から 46 行の処理を表している．reg クラスのインスタンスが灰色に塗られており，左からクラスのメタデータ，next\_, curr\_
 を表している．左側の大きな枠が\figref{src:class_singleton} の 18 行の \verb`std::vector` 型の registers\_ である．
 実線矢印は代入を表し．点線矢印はポインタ参照を表す．
 
@@ -57,8 +52,7 @@ reg::Update() メソッド内で行なっている reg
 reg クラスのインスタンスで実行されることになる．
 
 この代入する処理と reg::Update() メソッドの関数呼び出しの 2
-つのオーバーヘッドが\tabref{table:stencil_prof} で示すようにArchHDL
-の高速化を妨げている．
+つのオーバーヘッドが ArchHDL の高速化を妨げている．
 
 \begin{figure}[t]
  \centering
@@ -67,7 +61,7 @@ reg クラスのインスタンスで実行されることになる．
  \label{fig:mem_copy}
 \end{figure}
 
-\figref{fig:mem_copy} に提案手法を示す．\figref{fig:mem_copy} では値を配列として格納しポインタ参照を削減するように変更した reg クラスのインスタンスの処理の様子を表す．reg クラスのインスタンスが灰色に塗られており，左からクラスのメタデータ，\&next\_，\&curr\_ を表している．\&next\_，\&curr\_ は next\_, curr\_ のポインタである．
+\figref{fig:mem_copy} に提案手法を示す．\figref{fig:mem_copy} では値を配列として格納しポインタ参照を削減するように変更した reg クラスのインスタンスの処理の様子を表す．reg クラスのインスタンスが灰色に塗られており，左からクラスのメタデータ，\&next\_, \&curr\_ を表している．\&next\_, \&curr\_ は next\_, curr\_ のポインタである．
 下の枠が next\_, curr\_ の値をまとめた配列であり，ここでは next collections, curr collections と呼ぶ．
 実線矢印は代入を表し．点線矢印はポインタ参照を表す．
 
@@ -132,11 +126,11 @@ reg
 
 \fi
 
-\subsection{並列化による高速化 \label{ss:parallel}}
+\subsection{並列化による高速化} \label{ss:parallel}
 
 これまで逐次実行による高速化を考えてきたが，本節では並列化による高速化について考える．
 
-並列化による高速化を考える．\figref{src:class_singleton} の 40 行〜 47 行に示すように
+\figref{src:class_singleton} の 40 行〜 47 行に示すように
 毎サイクル，Module クラスと reg クラスの全インスタンスの Module::Always() メソッドと reg::Update() メソッドが呼び出されている．
 
 \figref{src:class_singleton} の41行〜43行で実行される Module::Always() メソッドはユーザが自由に記述できる．

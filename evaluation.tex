@@ -25,8 +25,58 @@
 \ref{ss:modeling}節で述べたように ArchHDL では C++11 のラムダ関数を用いて記述するため gcc のバージョンは 4.5 以上が必要である．
 これらの事情によりスペックは同じだが異なる OS を使用して評価することにした．
 
-今回の評価では現実的なハードウェアとしてステンシル計算回路を用いる．
-またカウンター回路と XORSHIFT による乱数生成器をマイクロベンチマークとして用いる．
+今回の評価ではマイクロベンチマークとしてカウンター回路と XORSHIFT による乱数生成器を用いる．
+現実的なハードウェアのベンチマークとしてステンシル計算回路を用いる．
+
+
+\subsection{マイクロベンチマークによる評価}
+
+\begin{figure}[t]
+ \centering
+ \includegraphics[clip,width=\linewidth]{counter_4096}
+ \caption{4096 個のカウンター回路の実行時間の Icarus Verilog と比較した速度向上比}
+ \label{fig:counter4096}
+\end{figure}
+
+\figref{fig:counter4096} に 4096 個のカウンター回路の実行時間の Icarus Verilog と比較した速度向上比を示す．
+縦軸は Icarus Verilog での実行時間を 1 とした速度向上比を示している．
+
+ArchHDL は商用の NC-Verilog, VCS と比較してもかなり高速である．高速化手法と並列化を共に適用した場合と比べると ArchHDL は NC-Verilog の約 58.8 倍，VCS の約 56.7 倍高速である．
+
+また今回提案している高速化手法は効果が出ている．元の ArchHDL よりも高速化手法と並列化を共に適用した場合と比べると約 5.2 倍高速である．
+
+
+
+\begin{figure}[t]
+ \centering
+ \includegraphics[clip,width=\linewidth]{counter_openmp}
+ \caption{高速化手法を適用した ArchHDL と OpenMP を適用したカウンター回路の実行時間の Icarus Verilog と比較した速度向上比}
+ \label{fig:counter_con}
+\end{figure}
+
+\figref{fig:counter_con} に高速化手法を適用した ArchHDL と OpenMP を適用したカウンター回路の実行時間の Icarus Verilog と比較した速度向上比を示す．
+縦軸は Icarus Verilog での実行時間を 1 とした速度向上比を示している．
+横軸はカウンターの個数である．
+
+逐次実行は Icarus Verilog と比較して速度向上比はほぼ一定である．
+並列化を行った場合はカウンターの個数が 1024 個を超えた所で逐次実行よりも高速になる．
+
+カウンターの個数はハードウェアの規模とみなせるため，並列化が有効なのはある程度規模の大きい回路であると言える．
+
+また \ref{sss:mem_copy} 節で述べた高速化手法は並列化を行った場合でも一貫して効果が出せている．
+
+\begin{figure}[t]
+ \centering
+ \includegraphics[clip,width=\linewidth]{xorshift}
+ \caption{XORSHIFT による乱数生成器の実行時間の Icarus Verilog と比較した速度向上比}
+ \label{fig:xorshift}
+\end{figure}
+
+\figref{fig:xorshift} は XORSHIFT による乱数生成器での実行時間の Icarus Verilog と比較した速度向上比である．試行回数は 524,288 回である．初期値の異なる乱数生成器を 512 個用意している．
+
+高速化手法を適用し，並列化を行った場合は，オリジナルの ArchHDL と比較して実行時間の 64\% を減少させることができる．
+
+
 
 \subsection{ステンシル計算回路による評価}
 
@@ -79,31 +129,7 @@ OpenMP による並列化はスレッド数を 8 個にして計測している�
 NC-Verilog は ArchHDL より高速でない．VCS は ArchHDL と set\_
 変数なしの実装より高速であるが，メモリーコピーにする実装よりは高速でない．また並列化を行ったものより高速でない．
 
-\subsection{マイクロベンチマークによる評価}
-
-\begin{figure}[t]
- \centering
- \includegraphics[clip,width=\linewidth]{counter_con}
- \caption{カウンター回路の Icarus Verilog と比較した実行時間の速度向上比}
- \label{fig:counter_con}
-\end{figure}
-
-$n$ 個のカウンター回路を実行するもの．
-
-（一定数超えると並列化の効果が出てくる）
-
-\begin{figure}[t]
- \centering
- \includegraphics[clip,width=\linewidth]{xorshift}
- \caption{XORSHIFT による乱数生成器の Icarus Verilog と比較した実行時間の速度向上比}
- \label{fig:xorshift}
-\end{figure}
-
-\figref{fig:xorshift} は XORSHIFT による乱数生成器での実行結果である．試行回数は 524,288 回である．初期値の異なる乱数生成器を 512 個用意している．
-
-縦軸は Icarus Verilog と比較したそれぞれの速度向上比である．
 
 
 
-
-\subsection{高速化の解析}
+% \subsection{高速化の解析}
