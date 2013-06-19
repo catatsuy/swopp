@@ -1,6 +1,4 @@
-本章では Icarus Verilog/NC-Verilog~\cite{ncverilog}/VCS~\cite{vcs}
-での論理シミュレーションの実行時間と ArchHDL
-での実行時間を比較し，評価する．
+本章では Icarus Verilog/NC-Verilog/VCS での論理シミュレーションの実行時間と ArchHDL での実行時間を比較し，評価する．
 
 \begin{table}[t]
  \caption{実行環境一覧}
@@ -16,8 +14,7 @@
  \end{center}
 \end{table}
 
-\tabref{table:exec_env} は Icarus Verilog/ArchHDL と NC-Verilog/VCS
-の実行環境の一覧である．
+\tabref{table:exec_env} は Icarus Verilog/ArchHDL と NC-Verilog/VCS の実行環境の一覧である．
 
 両者の実行環境が異なる理由は NC-Verilog と VCS が RedHat 系しか実行環境が用意されていない．
 また有償ツールであるためソースコードが公開されていない．そのためコンパイルすることもできない．
@@ -43,7 +40,7 @@
 
 ArchHDL は商用の NC-Verilog, VCS と比較してもかなり高速である．高速化手法と並列化を共に適用した場合と比べると ArchHDL は NC-Verilog の約 58.8 倍，VCS の約 56.7 倍高速である．
 
-また今回提案している高速化手法は効果が出ている．元の ArchHDL よりも高速化手法と並列化を共に適用した場合と比べると約 5.2 倍高速である．
+また今回提案している高速化手法は効果が出ている．高速化手法と並列化を共に適用した ArchHDL のシミュレーションはオリジナルの ArchHDL より約 5.23 倍高速である．
 
 
 
@@ -74,8 +71,9 @@ ArchHDL は商用の NC-Verilog, VCS と比較してもかなり高速である�
 
 \figref{fig:xorshift} は XORSHIFT による乱数生成器での実行時間の Icarus Verilog と比較した速度向上比である．試行回数は 524,288 回である．初期値の異なる乱数生成器を 512 個用意している．
 
-高速化手法を適用し，並列化を行った場合は，オリジナルの ArchHDL と比較して実行時間の 64\% を減少させることができる．
+ArchHDL は商用の NC-Verilog, VCS と比較してもかなり高速である．高速化手法と並列化を共に適用した場合と比べると ArchHDL は NC-Verilog の約 32.2 倍，VCS の約 11.3 倍高速である．
 
+高速化手法と並列化を共に適用した ArchHDL のシミュレーションはオリジナルの ArchHDL より約 2.78 倍高速である．
 
 
 \subsection{ステンシル計算回路による評価}
