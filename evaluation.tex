@@ -1,41 +1,60 @@
-本章では Icarus Verilog/NC-Verilog/VCS での論理シミュレーションの実行時間と ArchHDL での実行時間を比較し，評価する．
+本章では ArchHDL での実行時間を評価し，Icarus Verilog, NC-Verilog, VCS での論理シミュレーションの実行時間と比較する．
 
 \begin{table}[t]
- \caption{実行環境一覧}
+ \caption{実行環境}
  \label{table:exec_env}
  \begin{center}
-  \begin{tabular}{lcc} \toprule
-         &  Icarus Verilog/ArchHDL  &  NC-Verilog/VCS   \\ \midrule
+  \begin{tabular}{l|c|c} \hline
+         &  Icarus Verilog, ArchHDL  &  NC-Verilog, VCS   \\ \hline
   OS     &  Ubuntu12.04             &  CentOS5.9        \\
-  カーネル &  Linux 3.2.0-39-generic  &  Linux 2.6.18-348.4.1.el5   \\
-  CPU    &  \multicolumn{2}{c}{Intel Core i7-3770K CPU @ 3.50GHz}   \\
-  メモリ  &  \multicolumn{2}{c}{$16\,\mathrm{GB}$}  \\ \bottomrule
+  CPU    &  Core i7-3770K 3.50GHz   &  Core i7-3770K 3.50GHz  \\
+  メモリ  &  $16\,\mathrm{GB}$       &  $16\,\mathrm{GB}$  \\ \hline
   \end{tabular}
  \end{center}
 \end{table}
 
-\tabref{table:exec_env} は Icarus Verilog/ArchHDL と NC-Verilog/VCS の実行環境の一覧である．
+同じ仕様の 2 台の計算機を用いる．
+一台は Icarus Verilog, ArchHDL の評価に用いる．もう一台は NC-Verilog, VCS の評価に用いる．
+\tabref{table:exec_env} に実行環境をまとめる．
+CPU，メモリなどのハードウェアの仕様は同一である．
+一方ソフトウェアの制約により異なる OS を利用する．
 
-両者の実行環境が異なる理由は NC-Verilog と VCS が RedHat 系しか実行環境が用意されていない．
-また有償ツールであるためソースコードが公開されていない．そのためコンパイルすることもできない．
-しかし CentOS5.9 は gcc のバージョンが 4.1.2 である．
+異なる OS を用いる理由を述べる．
+NC-Verilog と VCS は RedHat 系のみをサポートしている．
+よって RedHat 系のディストリビューションである CentOS を用いる．
+しかし CentOS5.9 に含まれる gcc のバージョンは 4.1.2 である．
 \ref{ss:modeling}節で述べたように ArchHDL では C++11 のラムダ関数を用いて記述するため gcc のバージョンは 4.5 以上が必要である．
-これらの事情によりスペックは同じだが異なる OS を使用して評価することにした．
+よってこの条件を満たす Ubuntu12.04 を用いる．
+Icarus Verilog はどちらのディストリビューションでも動作するが，今回は Ubuntu を用いる．
 
-今回の評価ではマイクロベンチマークとしてカウンター回路と XORSHIFT による乱数生成器を用いる．
-現実的なハードウェアのベンチマークとしてステンシル計算回路を用いる．
+評価では，マイクロベンチマークとして 2 つの回路，現実的なハードウェアのベンチマークとしてステンシル計算回路\cite{koba:stencil}を用いる．
+Verilog HDL と ArchHDL のためのハードウェア記述の記述は手作業により記述した．
+両ハードウェア記述の出力は同様になるように記述した．
 
 
 \subsection{マイクロベンチマークによる評価}
 
+マイクロベンチマークとしてカウンタ回路と XORSHIFT による乱数生成回路を用いる．
+
+\begin{figure}[t]
+ \lstinputlisting[language=c++]{src/xorshift_alg.cc}
+ \caption{XORSHIFT 法に基づく乱数生成のアルゴリズム}
+ \label{src:xorshift_alg}
+\end{figure}
+
+カウンタ回路とは \figref{src:counter} に示した 1 サイクルごとに 1 を足す回路である．
+ハードウェアの規模を増やすためにカウンタの数を指定できるようにした．
+XORSHIFT による乱数生成回路とはシフトと XOR 演算のみで構成できる XORSHIFT 法に基づく乱数生成器をハードウェア記述によって実装した回路である．
+\figref{src:xorshift_alg} に XORSHIFT 法に基づく乱数生成のアルゴリズムを C 言語によって実装したものを示す．
+
 \begin{figure}[t]
  \centering
  \includegraphics[clip,width=\linewidth]{counter_4096}
- \caption{4096 個のカウンター回路の実行時間の Icarus Verilog と比較した速度向上比}
+ \caption{4096 個のカウンタ回路の実行時間の Icarus Verilog と比較した速度向上比}
  \label{fig:counter4096}
 \end{figure}
 
-\figref{fig:counter4096} に 4096 個のカウンター回路の実行時間の Icarus Verilog と比較した速度向上比を示す．
+\figref{fig:counter4096} に 4096 個のカウンタ回路の実行時間の Icarus Verilog と比較した速度向上比を示す．
 縦軸は Icarus Verilog での実行時間を 1 とした速度向上比を示している．
 
 ArchHDL は商用の NC-Verilog, VCS と比較してもかなり高速である．
@@ -48,19 +67,19 @@ ArchHDL は商用の NC-Verilog, VCS と比較してもかなり高速である�
 
 \begin{figure}[t]
  \centering
- \includegraphics[clip,width=\linewidth]{counter_openmp}
- \caption{高速化手法を適用した ArchHDL と OpenMP を適用したカウンター回路の実行時間の Icarus Verilog と比較した速度向上比}
+ \includegraphics[clip,width=\linewidth]{counter_con}
+ \caption{高速化手法を適用した ArchHDL と OpenMP を適用したカウンタ回路の実行時間の Icarus Verilog と比較した速度向上比}
  \label{fig:counter_con}
 \end{figure}
 
-\figref{fig:counter_con} に高速化手法を適用した ArchHDL と OpenMP を適用したカウンター回路の実行時間の Icarus Verilog と比較した速度向上比を示す．
+\figref{fig:counter_con} に高速化手法を適用した ArchHDL と OpenMP を適用したカウンタ回路の実行時間の Icarus Verilog と比較した速度向上比を示す．
 縦軸は Icarus Verilog での実行時間を 1 とした速度向上比を示している．
-横軸はカウンターの個数である．
+横軸はカウンタの個数である．
 
 逐次実行は Icarus Verilog と比較して速度向上比はほぼ一定である．
-並列化を行った場合はカウンターの個数が 1024 個を超えた所で逐次実行よりも高速になる．
+並列化を行った場合はカウンタの個数が 1024 個を超えた所で逐次実行よりも高速になる．
 
-カウンターの個数はハードウェアの規模とみなせるため，並列化が有効なのはある程度規模の大きい回路であると言える．
+カウンタの個数はハードウェアの規模とみなせるため，並列化が有効なのはある程度規模の大きい回路であると言える．
 
 また \ref{sss:mem_copy} 節で述べた高速化手法は並列化を行った場合でも一貫して効果が出せている．
 
