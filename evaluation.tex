@@ -24,8 +24,10 @@ NC-Verilog と VCS は RedHat 系のみをサポートしている．
 よって RedHat 系のディストリビューションである CentOS を用いる．
 しかし CentOS5.9 に含まれる gcc のバージョンは 4.1.2 である．
 \ref{ss:modeling}節で述べたように ArchHDL では C++11 のラムダ関数を用いて記述するため gcc のバージョンは 4.5 以上が必要である．
-よってこの条件を満たす Ubuntu12.04 を用いる．
-Icarus Verilog はどちらのディストリビューションでも動作するが，今回は Ubuntu を用いる．
+そこで Ubuntu12.04 を用いる．
+Ubuntu12.04 に含まれる gcc のバージョンは 4.6.3 である．
+Icarus Verilog はどちらのディストリビューションでも動作するが，今回は Ubuntu12.04 を用いる．
+Ubuntu12.04 に含まれる Icarus Verilog のバージョンは 0.9.5 である．
 
 評価では，マイクロベンチマークとして 2 つの回路，現実的なハードウェアのベンチマークとしてステンシル計算回路\cite{koba:stencil}を用いる．
 Verilog HDL と ArchHDL のためのハードウェア記述の記述は手作業により記述した．
@@ -50,11 +52,11 @@ XORSHIFT による乱数生成回路とはシフトと XOR 演算のみで構成
 \begin{figure}[t]
  \centering
  \includegraphics[clip,width=\linewidth]{counter_4096}
- \caption{4096 個のカウンタ回路の実行時間の Icarus Verilog と比較した速度向上比}
+ \caption{4096 個のカウンタ回路の実行時間を Icarus Verilog と比較した速度向上比}
  \label{fig:counter4096}
 \end{figure}
 
-\figref{fig:counter4096} に 4096 個のカウンタ回路の実行時間の Icarus Verilog と比較した速度向上比を示す．
+\figref{fig:counter4096} に 4096 個のカウンタ回路の実行時間を Icarus Verilog と比較した速度向上比を示す．
 縦軸は Icarus Verilog での実行時間を 1 とした速度向上比を示している．
 
 ArchHDL は商用の NC-Verilog, VCS と比較してもかなり高速である．
@@ -68,11 +70,11 @@ ArchHDL は商用の NC-Verilog, VCS と比較してもかなり高速である�
 \begin{figure}[t]
  \centering
  \includegraphics[clip,width=\linewidth]{counter_con}
- \caption{高速化手法を適用した ArchHDL と OpenMP を適用したカウンタ回路の実行時間の Icarus Verilog と比較した速度向上比}
+ \caption{高速化手法を適用した ArchHDL と OpenMP を適用したカウンタ回路の実行時間を Icarus Verilog と比較した速度向上比}
  \label{fig:counter_con}
 \end{figure}
 
-\figref{fig:counter_con} に高速化手法を適用した ArchHDL と OpenMP を適用したカウンタ回路の実行時間の Icarus Verilog と比較した速度向上比を示す．
+\figref{fig:counter_con} に高速化手法を適用した ArchHDL と OpenMP を適用したカウンタ回路の実行時間を Icarus Verilog と比較した速度向上比を示す．
 縦軸は Icarus Verilog での実行時間を 1 とした速度向上比を示している．
 横軸はカウンタの個数である．
 
@@ -86,11 +88,11 @@ ArchHDL は商用の NC-Verilog, VCS と比較してもかなり高速である�
 \begin{figure}[t]
  \centering
  \includegraphics[clip,width=\linewidth]{xorshift}
- \caption{XORSHIFT による乱数生成器の実行時間の Icarus Verilog と比較した速度向上比}
+ \caption{512 個の XORSHIFT による乱数生成器の実行時間を Icarus Verilog と比較した速度向上比}
  \label{fig:xorshift}
 \end{figure}
 
-\figref{fig:xorshift} は XORSHIFT による乱数生成器での実行時間の Icarus Verilog と比較した速度向上比である．
+\figref{fig:xorshift} は XORSHIFT による乱数生成器での実行時間を Icarus Verilog と比較した速度向上比である．
 試行回数は 524,288 回である．初期値の異なる乱数生成器を 512 個用意している．
 
 ArchHDL は商用の NC-Verilog, VCS と比較してもかなり高速である．
