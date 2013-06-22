@@ -30,7 +30,7 @@ reg クラスのインスタンスの更新頻度が低い回路であればこ�
 
 \begin{figure}[t]
  \centering
- \includegraphics[clip,width=\linewidth-30pt]{simple_reg}
+ \includegraphics[clip,width=\linewidth-30pt]{registers_orig}
  \caption{ArchHDL における reg クラスのインスタンスの処理の様子}
  \label{fig:regs}
 \end{figure}
@@ -53,7 +53,7 @@ reg クラスのインスタンスの curr\_ に next\_ の値を代入する処
 
 \begin{figure}[t]
  \centering
- \includegraphics[clip,width=\linewidth-30pt]{mem_copy}
+ \includegraphics[clip,width=\linewidth-30pt]{registers_mem}
  \caption{値を配列として格納しメモリ配置を工夫した reg クラスのインスタンスの処理の様子}
  \label{fig:mem_copy}
 \end{figure}
@@ -66,7 +66,7 @@ reg クラスのインスタンスが灰色に塗られており，左からク�
 \&next\_, \&curr\_ は next\_, curr\_ のポインタである．
 下の枠が next\_, curr\_ の値をまとめた配列であり，
 ここでは next collections, curr collections と呼ぶ．
-実線矢印は代入を表し．点線矢印はポインタの参照先を表す．
+実線矢印は代入を表し，点線矢印はポインタの参照先を表す．
 
 ArchHDL の実装では次サイクルに移る前に行われる curr\_ に next\_ の値を代入する処理は
 reg クラスのインスタンスが存在するアドレスを調べる必要がある．
