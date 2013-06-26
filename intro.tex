@@ -3,17 +3,17 @@
 このために Verilog HDL などのハードウェア記述言語が用いられることが一般的である．
 
 我々は C++ 言語上で RTL モデリングを行う新しい言語である ArchHDL を提案している~\cite{satos:archhdl}．
-これは Verilog HDL に近い記述でハードウェアの論理検証を行うことができる．
+ArchHDL を用いることで Verilog HDL に近い記述でハードウェアの論理検証を行うことができる．
 
 ArchHDL で記述したハードウェアのシミュレーションはオープンソースの Verilog シミュレータである Icarus Verilog~\cite{iverilog}と比較して高速である．
-しかし一部のハードウェアシミュレーションにおいて有償の Verilog シミュレータである Cadence 社の NC-Verilog~\cite{ncverilog} より高速であったが，同じく有償の Synopsys 社の VCS~\cite{vcs} より高速ではないことがあった．
+しかし一部のハードウェアシミュレーションにおいて有償の Verilog シミュレータである Cadence 社の NC-Verilog より高速であったが，同じく有償の Synopsys 社の VCS~\cite{vcs} より高速ではないことがあった．
 
 そこで ArchHDL に分岐の削減，メモリ配置の工夫，OpenMP による並列化といった高速化手法を適用する．
 
-本論文では Verilog シミュレータの Icarus Verilog, NC-Verilog, VCS と比較して，
+本稿では Verilog シミュレータの Icarus Verilog, NC-Verilog, VCS と比較して，
 今回の高速化手法の有用性を評価する．
 
-本論文の構成は以下の通りである．\ref{s:summary} 章で，ArchHDL の概要を述べる．
-\ref{s:method} 章で，ArchHDL のプロファイリングとその結果から高速化手法を提案する．
+本稿の構成は以下の通りである．\ref{s:summary} 章で，ArchHDL の概要を述べる．
+\ref{s:method} 章で，ArchHDL の高速化手法を提案する．
 \ref{s:evaluation} 章で，様々な Verilog シミュレーションツールと比較して ArchHDL と今回の高速化手法の評価を行う．
 \ref{s:conclusion} 章でまとめる．
